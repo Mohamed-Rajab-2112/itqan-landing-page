@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 60" fill="none">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&amp;family=Space+Grotesk:wght@700&amp;display=swap');
+      .ar-title { font-family: 'Cairo', sans-serif; font-weight: 900; }
+      .ar-sub { font-family: 'Cairo', sans-serif; font-weight: 700; }
+      .en-tag { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.22em; }
+    </style>
+  </defs>
+
+  <!-- Architectural Mark (48x48) -->
+  <g transform="translate(6, 6)">
+    <polygon points="24,6 40,15 40,34 24,43 8,34 8,15" stroke="#1A2B4C" stroke-width="2" stroke-linejoin="round" />
+    <line x1="8" y1="15" x2="24" y2="24.5" stroke="#1A2B4C" stroke-width="1.7" stroke-linecap="round" />
+    <line x1="40" y1="15" x2="24" y2="24.5" stroke="#1A2B4C" stroke-width="1.7" stroke-linecap="round" />
+    <line x1="24" y1="6" x2="24" y2="43" stroke="#D97706" stroke-width="2.4" stroke-linecap="round" />
+    <circle cx="24" cy="24.5" r="1.5" fill="#D97706" />
+    <polygon points="24,0 27,3 24,6 21,3" fill="#D97706" />
+  </g>
+
+  <!-- Vertical Subtle Divider -->
+  <line x1="62" y1="14" x2="62" y2="46" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- Typography -->
+  <g transform="translate(74, 0)">
+    <text x="0" y="33" class="ar-title" font-size="26" fill="#1A2B4C" letter-spacing="-0.5">إتـقـان</text>
+    <text x="0" y="49" class="ar-sub" font-size="9.5" fill="#64748B">الرقابة الهندسية المستقلة وفحص التشطيبات</text>
+  </g>
+</svg>

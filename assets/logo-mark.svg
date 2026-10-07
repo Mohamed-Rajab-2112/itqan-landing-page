@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Isometric Architectural Room Cube -->
+  <polygon points="50,14 84,33 84,71 50,90 16,71 16,33" stroke="#1A2B4C" stroke-width="4" stroke-linejoin="round" />
+  
+  <!-- Internal Room Planes / Wall Corner -->
+  <line x1="16" y1="33" x2="50" y2="52" stroke="#1A2B4C" stroke-width="3.4" stroke-linecap="round" />
+  <line x1="84" y1="33" x2="50" y2="52" stroke="#1A2B4C" stroke-width="3.4" stroke-linecap="round" />
+  
+  <!-- Central Architectural Alif & Laser Plumb Line -->
+  <line x1="50" y1="14" x2="50" y2="90" stroke="#D97706" stroke-width="4.8" stroke-linecap="round" />
+  <circle cx="50" cy="52" r="3" fill="#D97706" />
+
+  <!-- Laser Diamond Apex (Hamza) -->
+  <polygon points="50,2 56,8 50,14 44,8" fill="#D97706" />
+</svg>

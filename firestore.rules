@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /leads/{leadId} {
+      allow create: if request.resource.data.phone is string 
+                    && request.resource.data.fullName is string;
+      allow read, update, delete: if false; // Protect customer data
+    }
+  }
+}
