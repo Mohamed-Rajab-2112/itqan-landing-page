@@ -23,6 +23,23 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hero Headline Arabic Line Height & Vertical Rhythm */
+.hero-headline {
+  line-height: 1.4 !important;
+}
+
+@media (min-width: 640px) {
+  .hero-headline {
+    line-height: 1.38 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-headline {
+    line-height: 1.38 !important;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

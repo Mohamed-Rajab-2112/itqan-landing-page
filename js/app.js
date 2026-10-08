@@ -152,6 +152,117 @@ function isValidEgyptianPhone(phone) {
 }
 
 /**
+ * ============================================================================
+ * WhatsApp Integration: Dual-Engine Architecture
+ * Target Phone Number: +201554941678
+ * Engine 1: Dynamic Client Deep-Link (wa.me)
+ * Engine 2: Asynchronous Background Alert (CallMeBot API)
+ * ============================================================================
+ */
+const ITQAN_WHATSAPP_CONFIG = {
+  phone: '201554941678', // International format without '+'
+  callMeBotApiKey: '9610059', // Activated CallMeBot API key
+  enableBackgroundAlert: true // Enabled for silent admin alerts
+};
+
+/**
+ * Format lead payload into a branded, high-converting Arabic WhatsApp message
+ */
+function formatWhatsAppLeadMessage(leadData, leadId) {
+  const formattedDate = new Date().toLocaleString('ar-EG', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  });
+
+  return [
+    `🏗️ *طلب عروض تشطيب واستشارة هندسية | منصة إتقان*`,
+    `────────────────────────────`,
+    `👤 *اسم العميل:* ${leadData.fullName}`,
+    `📞 *رقم الموبايل:* ${leadData.phone}`,
+    `📐 *المساحة التقريبية:* ${leadData.unitArea} م²`,
+    `🧱 *حالة الوحدة:* ${leadData.unitState}`,
+    `📍 *الموقع / الكومبوند:* ${leadData.location}`,
+    `🔖 *كود الطلب:* ${leadId}`,
+    `🕒 *تاريخ التقديم:* ${formattedDate}`,
+    `────────────────────────────`,
+    `تم تسجيل البيانات بنجاح في قاعدة بيانات إتقان. يرجى التواصل لمراجعة المواصفات وتجهيز مقارنة أفضل 3 عروض تشطيب معتمدة وتحديد موعد المعاينة.`
+  ].join('\n');
+}
+
+/**
+ * Build Universal WhatsApp deep-link URL (wa.me)
+ */
+function buildWhatsAppUrl(phoneNumber, message) {
+  return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+}
+
+/**
+ * Engine 2: Send silent background alert to +201554941678 via CallMeBot API
+ * Uses hidden iframe submission to avoid browser CORS/CORB/ORB restrictions on text/html responses
+ */
+function sendBackgroundWhatsAppAlert(leadData, leadId) {
+  if (!ITQAN_WHATSAPP_CONFIG.callMeBotApiKey || !ITQAN_WHATSAPP_CONFIG.enableBackgroundAlert) {
+    return;
+  }
+  try {
+    const text = formatWhatsAppLeadMessage(leadData, leadId);
+
+    // Reuse or create hidden iframe
+    let iframe = document.getElementById('itqan-callmebot-frame');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id = 'itqan-callmebot-frame';
+      iframe.name = 'itqan-callmebot-frame';
+      iframe.style.display = 'none';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
+    }
+
+    // Create transient form targeting the iframe
+    const form = document.createElement('form');
+    form.action = 'https://api.callmebot.com/whatsapp.php';
+    form.method = 'GET';
+    form.target = 'itqan-callmebot-frame';
+    form.style.display = 'none';
+
+    const phoneInput = document.createElement('input');
+    phoneInput.type = 'hidden';
+    phoneInput.name = 'phone';
+    phoneInput.value = ITQAN_WHATSAPP_CONFIG.phone;
+    form.appendChild(phoneInput);
+
+    const textInput = document.createElement('input');
+    textInput.type = 'hidden';
+    textInput.name = 'text';
+    textInput.value = text;
+    form.appendChild(textInput);
+
+    const keyInput = document.createElement('input');
+    keyInput.type = 'hidden';
+    keyInput.name = 'apikey';
+    keyInput.value = ITQAN_WHATSAPP_CONFIG.callMeBotApiKey;
+    form.appendChild(keyInput);
+
+    document.body.appendChild(form);
+
+    setTimeout(() => {
+      try {
+        form.submit();
+      } catch (submitErr) {
+        console.warn('Form submit fallback notice:', submitErr);
+      }
+      setTimeout(() => form.remove(), 1000);
+    }, 50);
+
+    console.log('✅ [WhatsApp Service] Background alert submitted via iframe bridge to CallMeBot');
+  } catch (err) {
+    console.warn('⚠️ [WhatsApp Service] Background alert notice:', err);
+  }
+}
+
+/**
  * 5. Lead Form Submission & Validation
  */
 function initLeadForm() {
@@ -241,8 +352,25 @@ function initLeadForm() {
       const result = await submitLead(leadPayload);
 
       if (result.success) {
-        // Show success modal
-        if (modalLeadId) modalLeadId.textContent = result.id || 'ITQ-2026';
+        const leadId = result.id || 'ITQ-2026';
+
+        // 1. Update Lead Reference ID Badge
+        if (modalLeadId) modalLeadId.textContent = leadId;
+
+        // 2. Build dynamic WhatsApp message & deep-link with all submitted data
+        const waMessage = formatWhatsAppLeadMessage(leadPayload, leadId);
+        const waUrl = buildWhatsAppUrl(ITQAN_WHATSAPP_CONFIG.phone, waMessage);
+
+        // Update modal primary WhatsApp CTA button
+        const modalWaCta = document.getElementById('modal-whatsapp-cta');
+        if (modalWaCta) {
+          modalWaCta.href = waUrl;
+        }
+
+        // 3. Engine 2: Asynchronously trigger background alert (if CallMeBot is configured)
+        sendBackgroundWhatsAppAlert(leadPayload, leadId);
+
+        // 4. Show success modal
         if (successModal) {
           successModal.classList.remove('hidden');
           successModal.classList.add('flex');
