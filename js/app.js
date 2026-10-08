@@ -1,15 +1,161 @@
 /**
  * إتقان (Itqan) - Core Application Logic
  * High-Converting PropTech / ConTech Landing Page
+ * Full Pre-Campaign Readiness: Tracking, Attribution, CRO, Modals & Mobile Sticky Bar
  */
 
+// ============================================================================
+// TRACKING & ATTRIBUTION CONFIGURATION
+// TODO [META PIXEL]: Once the Facebook Page & Ad Account are created:
+// 1. Open Meta Events Manager: https://business.facebook.com/events_manager
+// 2. Copy your 15-16 digit Pixel / Dataset ID (e.g. "1234567890123456")
+// 3. Paste it in window.ITQAN_TRACKING_CONFIG.metaPixelId below.
+// ============================================================================
+window.ITQAN_TRACKING_CONFIG = window.ITQAN_TRACKING_CONFIG || {
+  metaPixelId: '', // TODO: Paste your 15-16 digit Meta Pixel ID here
+  gaMeasurementId: 'G-VC10PXQGWQ'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+  initAdTracking();
   initNavbarScroll();
   initSmoothScroll();
   initUnitStateSelector();
+  initPropertyTypeSelector();
+  initTimelineSelector();
   initAreaQuickPills();
+  initInfoModals();
+  initMobileStickyBar();
+  initWhatsAppClickTracking();
   initLeadForm();
 });
+
+/**
+ * 0. AD TRACKING & ATTRIBUTION ENGINE (UTM & Click IDs)
+ * Captures query parameters from ad traffic (Meta, Google, TikTok, Snapchat)
+ * and stores them in sessionStorage to preserve attribution across navigation.
+ */
+function initAdTracking() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackingKeys = [
+      'utm_source',
+      'utm_medium',
+      'utm_campaign',
+      'utm_content',
+      'utm_term',
+      'fbclid',
+      'gclid',
+      'ttclid'
+    ];
+
+    trackingKeys.forEach(key => {
+      const val = urlParams.get(key);
+      if (val) {
+        sessionStorage.setItem(`itqan_${key}`, val);
+      }
+    });
+
+    if (!sessionStorage.getItem('itqan_first_landing')) {
+      sessionStorage.setItem('itqan_first_landing', window.location.href.split('?')[0]);
+    }
+    if (!sessionStorage.getItem('itqan_referrer') && document.referrer) {
+      sessionStorage.setItem('itqan_referrer', document.referrer);
+    }
+  } catch (e) {
+    console.warn('Ad tracking initialization notice:', e);
+  }
+}
+
+/**
+ * Retrieve captured ad attribution data for Firestore lead payload
+ */
+function getStoredAdTracking() {
+  const trackingKeys = [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_content',
+    'utm_term',
+    'fbclid',
+    'gclid',
+    'ttclid'
+  ];
+
+  const data = {};
+  const urlParams = new URLSearchParams(window.location.search);
+
+  trackingKeys.forEach(key => {
+    // Current URL takes precedence, fallback to stored session
+    const val = urlParams.get(key) || sessionStorage.getItem(`itqan_${key}`);
+    if (val) {
+      data[key] = val;
+    }
+  });
+
+  return {
+    ...data,
+    landingPageUrl: sessionStorage.getItem('itqan_first_landing') || window.location.href.split('?')[0],
+    referrer: sessionStorage.getItem('itqan_referrer') || document.referrer || 'direct'
+  };
+}
+
+/**
+ * Dispatch Conversion Events to GA4 & Meta Pixel
+ */
+function trackLeadConversion(leadId, leadData) {
+  // 1. Google Analytics 4
+  if (window.itqanFirebase && window.itqanFirebase.analytics && window.itqanFirebase.logEvent) {
+    try {
+      window.itqanFirebase.logEvent(window.itqanFirebase.analytics, 'generate_lead', {
+        lead_id: leadId,
+        unit_area: leadData.unitArea,
+        unit_state: leadData.unitState,
+        property_type: leadData.propertyType,
+        value: leadData.unitArea,
+        currency: 'EGP'
+      });
+    } catch (e) {
+      console.warn('GA4 lead tracking notice:', e);
+    }
+  }
+
+  // 2. Meta Pixel (if initialized)
+  if (window.fbq) {
+    try {
+      window.fbq('track', 'Lead', {
+        content_name: 'طلب عروض تشطيب واستشارة هندسية',
+        content_category: leadData.unitState,
+        value: leadData.unitArea,
+        currency: 'EGP'
+      });
+    } catch (e) {
+      console.warn('Meta Pixel lead tracking notice:', e);
+    }
+  }
+}
+
+function trackWhatsAppClick(source) {
+  // 1. GA4
+  if (window.itqanFirebase && window.itqanFirebase.analytics && window.itqanFirebase.logEvent) {
+    try {
+      window.itqanFirebase.logEvent(window.itqanFirebase.analytics, 'whatsapp_contact', {
+        source: source
+      });
+    } catch (e) {
+      console.warn('GA4 WhatsApp tracking notice:', e);
+    }
+  }
+
+  // 2. Meta Pixel
+  if (window.fbq) {
+    try {
+      window.fbq('trackCustom', 'WhatsAppContact', { source: source });
+    } catch (e) {
+      console.warn('Meta Pixel WhatsApp tracking notice:', e);
+    }
+  }
+}
 
 /**
  * 1. Navbar Sticky Background Effect on Scroll
@@ -53,7 +199,7 @@ function initSmoothScroll() {
 
         // Focus first field for convenience
         setTimeout(() => {
-          const firstInput = targetElem.querySelector('input');
+          const firstInput = targetElem.querySelector('input:not([type="hidden"])');
           if (firstInput) firstInput.focus();
         }, 500);
       }
@@ -62,7 +208,7 @@ function initSmoothScroll() {
 }
 
 /**
- * 3. Unit State Pill Selector (على الطوب الأحمر / نصف تشطيب)
+ * 3. Unit State Pill Selector (على الطوب الأحمر / نصف تشطيب / تجديد شامل)
  */
 function initUnitStateSelector() {
   const options = document.querySelectorAll('.state-option');
@@ -97,7 +243,53 @@ function initUnitStateSelector() {
 }
 
 /**
- * 4. Quick Area Selection Buttons (100 م², 140 م², 180 م², 220 م²)
+ * 4. Property Type Pill Selector (شقة / دوبلكس / فيلا / تجاري)
+ */
+function initPropertyTypeSelector() {
+  const pills = document.querySelectorAll('.prop-type-pill');
+  const hiddenInput = document.getElementById('property-type-input');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => {
+        p.classList.remove('border-primary', 'bg-primary', 'text-white');
+        p.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+      });
+
+      pill.classList.add('border-primary', 'bg-primary', 'text-white');
+      pill.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+
+      const val = pill.getAttribute('data-type');
+      if (hiddenInput) hiddenInput.value = val;
+    });
+  });
+}
+
+/**
+ * 5. Execution Timeline Pill Selector (فوري / 1-3 أشهر / استلام قادم)
+ */
+function initTimelineSelector() {
+  const pills = document.querySelectorAll('.timeline-pill');
+  const hiddenInput = document.getElementById('timeline-input');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => {
+        p.classList.remove('border-primary', 'bg-primary', 'text-white');
+        p.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+      });
+
+      pill.classList.add('border-primary', 'bg-primary', 'text-white');
+      pill.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+
+      const val = pill.getAttribute('data-timeline');
+      if (hiddenInput) hiddenInput.value = val;
+    });
+  });
+}
+
+/**
+ * 6. Quick Area Selection Buttons (100 م², 140 م², 180 م², 220 م²)
  */
 function initAreaQuickPills() {
   const areaPills = document.querySelectorAll('.area-pill');
@@ -132,6 +324,132 @@ function initAreaQuickPills() {
 }
 
 /**
+ * 7. Privacy Policy & Terms of Service Modals
+ */
+function initInfoModals() {
+  const openButtons = document.querySelectorAll('[data-modal-open]');
+  const closeButtons = document.querySelectorAll('[data-modal-close]');
+
+  const openModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const closeModal = (modal) => {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  openButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = btn.getAttribute('data-modal-open');
+      openModal(targetId);
+    });
+  });
+
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-modal-close');
+      const modal = document.getElementById(targetId) || btn.closest('[role="dialog"]');
+      closeModal(modal);
+    });
+  });
+
+  // Close modals on backdrop click
+  ['privacy-modal', 'terms-modal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal(modal);
+      });
+    }
+  });
+
+  // Escape key closes open modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const openModals = document.querySelectorAll('[role="dialog"].flex');
+      openModals.forEach(m => closeModal(m));
+    }
+  });
+}
+
+/**
+ * 8. Mobile Sticky Conversion Bar
+ * Appears when scrolling past the hero section and disappears when the form is in view.
+ */
+function initMobileStickyBar() {
+  const stickyBar = document.getElementById('mobile-sticky-bar');
+  const leadForm = document.getElementById('lead-form');
+  const floatingBtn = document.getElementById('floating-whatsapp-btn');
+  if (!stickyBar) return;
+
+  const checkScroll = () => {
+    // Only active on mobile/tablet viewports (< 768px)
+    if (window.innerWidth >= 768) {
+      stickyBar.classList.add('translate-y-full');
+      if (floatingBtn) floatingBtn.classList.remove('bottom-20');
+      return;
+    }
+
+    const scrollY = window.scrollY;
+    let formInView = false;
+
+    if (leadForm) {
+      const rect = leadForm.getBoundingClientRect();
+      // Form is currently covering part of viewport
+      formInView = rect.top < window.innerHeight && rect.bottom > 100;
+    }
+
+    if (scrollY > 350 && !formInView) {
+      stickyBar.classList.remove('translate-y-full');
+      if (floatingBtn) floatingBtn.classList.add('bottom-20');
+    } else {
+      stickyBar.classList.add('translate-y-full');
+      if (floatingBtn) floatingBtn.classList.remove('bottom-20');
+    }
+  };
+
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  window.addEventListener('resize', checkScroll, { passive: true });
+  checkScroll();
+}
+
+/**
+ * 9. Universal WhatsApp Click Tracking
+ */
+function initWhatsAppClickTracking() {
+  const trackedLinks = [
+    { id: 'floating-whatsapp-btn', source: 'floating_icon' },
+    { id: 'modal-whatsapp-cta', source: 'success_modal' }
+  ];
+
+  trackedLinks.forEach(item => {
+    const el = document.getElementById(item.id);
+    if (el) {
+      el.addEventListener('click', () => {
+        trackWhatsAppClick(item.source);
+      });
+    }
+  });
+
+  // Track any footer or inline WhatsApp anchor
+  document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+    if (!trackedLinks.some(item => item.id === link.id)) {
+      link.addEventListener('click', () => {
+        trackWhatsAppClick('inline_link');
+      });
+    }
+  });
+}
+
+/**
  * Helper: Convert Arabic/Eastern numerals (٠-٩) to Western (0-9)
  */
 function normalizeArabicNumerals(str) {
@@ -155,8 +473,6 @@ function isValidEgyptianPhone(phone) {
  * ============================================================================
  * WhatsApp Integration: Dual-Engine Architecture
  * Target Phone Number: +201554941678
- * Engine 1: Dynamic Client Deep-Link (wa.me)
- * Engine 2: Asynchronous Background Alert (CallMeBot API)
  * ============================================================================
  */
 const ITQAN_WHATSAPP_CONFIG = {
@@ -174,19 +490,28 @@ function formatWhatsAppLeadMessage(leadData, leadId) {
     timeStyle: 'short'
   });
 
-  return [
+  const lines = [
     `🏗️ *طلب عروض تشطيب واستشارة هندسية | منصة إتقان*`,
     `────────────────────────────`,
     `👤 *اسم العميل:* ${leadData.fullName}`,
     `📞 *رقم الموبايل:* ${leadData.phone}`,
+    `🏛️ *نوع العقار:* ${leadData.propertyType || 'شقة سكنية'}`,
     `📐 *المساحة التقريبية:* ${leadData.unitArea} م²`,
     `🧱 *حالة الوحدة:* ${leadData.unitState}`,
+    `⏱️ *الموعد المتوقع:* ${leadData.timeline || 'فوري'}`,
     `📍 *الموقع / الكومبوند:* ${leadData.location}`,
     `🔖 *كود الطلب:* ${leadId}`,
-    `🕒 *تاريخ التقديم:* ${formattedDate}`,
-    `────────────────────────────`,
-    `تم تسجيل البيانات بنجاح في قاعدة بيانات إتقان. يرجى التواصل لمراجعة المواصفات وتجهيز مقارنة أفضل 3 عروض تشطيب معتمدة وتحديد موعد المعاينة.`
-  ].join('\n');
+    `🕒 *تاريخ التقديم:* ${formattedDate}`
+  ];
+
+  if (leadData.utm_source) {
+    lines.push(`🏷️ *مصدر الحملة:* ${leadData.utm_source}`);
+  }
+
+  lines.push(`────────────────────────────`);
+  lines.push(`تم تسجيل البيانات بنجاح في قاعدة بيانات إتقان. يرجى التواصل لمراجعة المواصفات وتجهيز مقارنة أفضل 3 عروض تشطيب معتمدة وتحديد موعد المعاينة.`);
+
+  return lines.join('\n');
 }
 
 /**
@@ -197,8 +522,7 @@ function buildWhatsAppUrl(phoneNumber, message) {
 }
 
 /**
- * Engine 2: Send silent background alert to +201554941678 via CallMeBot API
- * Uses hidden iframe submission to avoid browser CORS/CORB/ORB restrictions on text/html responses
+ * Engine 2: Send silent background alert via CallMeBot API
  */
 function sendBackgroundWhatsAppAlert(leadData, leadId) {
   if (!ITQAN_WHATSAPP_CONFIG.callMeBotApiKey || !ITQAN_WHATSAPP_CONFIG.enableBackgroundAlert) {
@@ -220,7 +544,6 @@ function sendBackgroundWhatsAppAlert(leadData, leadId) {
       document.body.appendChild(iframe);
     }
 
-    // Create transient form targeting the iframe
     const form = document.createElement('form');
     form.action = 'https://api.callmebot.com/whatsapp.php';
     form.method = 'GET';
@@ -263,7 +586,7 @@ function sendBackgroundWhatsAppAlert(leadData, leadId) {
 }
 
 /**
- * 5. Lead Form Submission & Validation
+ * 10. Lead Form Submission & Validation
  */
 function initLeadForm() {
   const form = document.getElementById('itqan-lead-form');
@@ -293,6 +616,8 @@ function initLeadForm() {
     const phone = document.getElementById('user-phone')?.value.trim();
     const area = document.getElementById('unit-area')?.value.trim();
     const state = document.getElementById('unit-state-input')?.value.trim();
+    const propertyType = document.getElementById('property-type-input')?.value.trim() || 'شقة سكنية';
+    const timeline = document.getElementById('timeline-input')?.value.trim() || 'فوري (خلال أسبوعين)';
     const location = document.getElementById('unit-location')?.value.trim();
 
     let hasError = false;
@@ -319,7 +644,7 @@ function initLeadForm() {
     if (!state) {
       const stateErr = document.getElementById('state-error');
       if (stateErr) {
-        stateErr.textContent = 'يرجى تحديد حالة الوحدة (على الطوب الأحمر أو نصف تشطيب)';
+        stateErr.textContent = 'يرجى تحديد حالة الوحدة (على الطوب الأحمر، نصف تشطيب، أو تجديد شامل)';
         stateErr.classList.remove('hidden');
       }
       hasError = true;
@@ -333,13 +658,19 @@ function initLeadForm() {
 
     if (hasError) return;
 
+    // Retrieve Ad Tracking Parameters (UTMs, Click IDs, Referrer)
+    const adTracking = getStoredAdTracking();
+
     // Prepare lead payload
     const leadPayload = {
       fullName,
       phone: normalizeArabicNumerals(phone).replace(/[\s\-\(\)]/g, ''),
       unitArea: Number(area),
       unitState: state,
+      propertyType,
+      timeline,
       location,
+      ...adTracking,
       submittedAt: new Date().toISOString(),
       userAgent: navigator.userAgent
     };
@@ -348,7 +679,6 @@ function initLeadForm() {
     setButtonLoading(submitBtn, true);
 
     try {
-      // Call Firebase / Backend API stub
       const result = await submitLead(leadPayload);
 
       if (result.success) {
@@ -361,23 +691,25 @@ function initLeadForm() {
         const waMessage = formatWhatsAppLeadMessage(leadPayload, leadId);
         const waUrl = buildWhatsAppUrl(ITQAN_WHATSAPP_CONFIG.phone, waMessage);
 
-        // Update modal primary WhatsApp CTA button
         const modalWaCta = document.getElementById('modal-whatsapp-cta');
         if (modalWaCta) {
           modalWaCta.href = waUrl;
         }
 
-        // 3. Engine 2: Asynchronously trigger background alert (if CallMeBot is configured)
+        // 3. Trigger Conversion Events (GA4 + Meta Pixel)
+        trackLeadConversion(leadId, leadPayload);
+
+        // 4. Trigger background alert (CallMeBot bridge)
         sendBackgroundWhatsAppAlert(leadPayload, leadId);
 
-        // 4. Show success modal
+        // 5. Show success modal
         if (successModal) {
           successModal.classList.remove('hidden');
           successModal.classList.add('flex');
           document.body.classList.add('overflow-hidden');
         }
 
-        // Reset form
+        // Reset form & restore default pill selections
         form.reset();
         document.querySelectorAll('.state-option').forEach(opt => {
           opt.classList.remove('selected', 'border-primary', 'bg-slate-50', 'ring-2', 'ring-primary');
@@ -389,12 +721,41 @@ function initLeadForm() {
           }
         });
         document.querySelectorAll('.area-pill').forEach(p => p.classList.remove('bg-primary', 'text-white', 'border-primary'));
+        
+        // Reset property type to default
+        const propPills = document.querySelectorAll('.prop-type-pill');
+        propPills.forEach((p, idx) => {
+          if (idx === 0) {
+            p.classList.add('border-primary', 'bg-primary', 'text-white');
+            p.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+          } else {
+            p.classList.remove('border-primary', 'bg-primary', 'text-white');
+            p.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+          }
+        });
+        const propInput = document.getElementById('property-type-input');
+        if (propInput) propInput.value = 'شقة سكنية';
+
+        // Reset timeline to default
+        const timelinePills = document.querySelectorAll('.timeline-pill');
+        timelinePills.forEach((p, idx) => {
+          if (idx === 0) {
+            p.classList.add('border-primary', 'bg-primary', 'text-white');
+            p.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+          } else {
+            p.classList.remove('border-primary', 'bg-primary', 'text-white');
+            p.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+          }
+        });
+        const timeInput = document.getElementById('timeline-input');
+        if (timeInput) timeInput.value = 'فوري (خلال أسبوعين)';
+
         const hiddenState = document.getElementById('unit-state-input');
         if (hiddenState) hiddenState.value = '';
       }
     } catch (err) {
       console.error('Submission error:', err);
-      alert('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى أو التواصل معنا عبر واتساب.');
+      alert('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة عبر واتساب.');
     } finally {
       setButtonLoading(submitBtn, false);
     }
@@ -408,7 +769,6 @@ function initLeadForm() {
       document.body.classList.remove('overflow-hidden');
     });
 
-    // Close on backdrop click
     successModal.addEventListener('click', (e) => {
       if (e.target === successModal) {
         successModal.classList.add('hidden');
@@ -462,30 +822,19 @@ function setButtonLoading(btn, isLoading) {
   } else {
     btn.disabled = false;
     btn.classList.remove('opacity-90', 'cursor-not-allowed');
-    if (btnText) btnText.textContent = 'طلب الاستشارة الهندسية والمعاينة';
+    if (btnText) btnText.textContent = 'طلب المعاينة واستلام عروض التشطيب';
     if (btnSpinner) btnSpinner.classList.add('hidden');
   }
 }
 
 /**
  * ============================================================================
- * Firebase Integration Function: submitLead(data)
- * Ready to be connected to Firebase Cloud Firestore
+ * Firebase Cloud Firestore Integration: submitLead(data)
+ * Saves full lead data including UTM campaign parameters & property attributes.
  * ============================================================================
- * Instructions for connecting:
- * 1. Initialize Firebase in your project or add Firebase SDK scripts in index.html.
- * 2. Replace this stub with:
- *
- *    import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
- *    const db = getFirestore();
- *    const docRef = await addDoc(collection(db, "leads"), {
- *      ...data,
- *      createdAt: serverTimestamp()
- *    });
- *    return { success: true, id: docRef.id };
  */
 async function submitLead(data) {
-  console.log("📌 [Itqan Firebase Service] Submitting Lead:", data);
+  console.log("📌 [Itqan Firebase Service] Submitting Lead with Attribution:", data);
 
   // Wait briefly if Firebase is still completing initialization
   if (!window.itqanFirebase || !window.itqanFirebase.db) {
@@ -501,37 +850,35 @@ async function submitLead(data) {
 
   // If Firebase is initialized, submit to Cloud Firestore
   if (window.itqanFirebase && window.itqanFirebase.db) {
-    const { db, collection, addDoc, serverTimestamp, analytics, logEvent } = window.itqanFirebase;
+    const { db, collection, addDoc, serverTimestamp } = window.itqanFirebase;
 
-    // 1. Save document to "leads" collection
-    const docRef = await addDoc(collection(db, "leads"), {
+    const firestorePayload = {
       fullName: data.fullName,
       phone: data.phone,
       unitArea: data.unitArea,
       unitState: data.unitState,
+      propertyType: data.propertyType || "شقة سكنية",
+      timeline: data.timeline || "فوري (خلال أسبوعين)",
       location: data.location,
+      utm_source: data.utm_source || "direct",
+      utm_medium: data.utm_medium || "none",
+      utm_campaign: data.utm_campaign || "none",
+      utm_content: data.utm_content || "none",
+      utm_term: data.utm_term || "none",
+      fbclid: data.fbclid || "",
+      gclid: data.gclid || "",
+      ttclid: data.ttclid || "",
+      landingPageUrl: data.landingPageUrl || window.location.href.split('?')[0],
+      referrer: data.referrer || document.referrer || "direct",
       submittedAt: data.submittedAt || new Date().toISOString(),
       userAgent: data.userAgent || navigator.userAgent,
       platform: "itqan_landing_page",
       createdAt: serverTimestamp()
-    });
+    };
+
+    const docRef = await addDoc(collection(db, "leads"), firestorePayload);
 
     console.log("✅ [Itqan Firebase Service] Document created successfully! ID:", docRef.id);
-
-    // 2. Fire Google Analytics conversion event if available
-    if (analytics && logEvent) {
-      try {
-        logEvent(analytics, "generate_lead", {
-          lead_id: docRef.id,
-          unit_area: data.unitArea,
-          unit_state: data.unitState,
-          value: data.unitArea,
-          currency: "EGP"
-        });
-      } catch (err) {
-        console.warn("Analytics event log notice:", err);
-      }
-    }
 
     return {
       success: true,
@@ -540,7 +887,7 @@ async function submitLead(data) {
     };
   }
 
-  // If Firebase is unreachable or blocked
+  // If Firebase is unreachable or blocked by client extension
   console.warn("⚠️ [Itqan Firebase Service] Firebase is not initialized. Using offline fallback simulation.");
   await new Promise(resolve => setTimeout(resolve, 850));
   const simulatedId = "DEMO-" + Math.floor(100000 + Math.random() * 900000);

@@ -17,6 +17,37 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ar_EG">
 
+  <!-- =========================================================================
+       TRACKING CONFIGURATION & AD ATTRIBUTION (Meta Pixel & GA4)
+       TODO [META PIXEL]: Once the Facebook Page & Ad Account are created:
+       1. Open Meta Events Manager: https://business.facebook.com/events_manager
+       2. Copy your 15-16 digit Pixel / Dataset ID (e.g. "1234567890123456")
+       3. Paste it in window.ITQAN_TRACKING_CONFIG.metaPixelId below.
+       The site will automatically initialize the pixel and track PageView, Lead,
+       and WhatsApp clicks!
+       ========================================================================= -->
+  <script>
+    window.ITQAN_TRACKING_CONFIG = {
+      // TODO: Paste Meta Pixel ID here when ready (e.g., '1234567890123456')
+      metaPixelId: '',
+      gaMeasurementId: 'G-VC10PXQGWQ'
+    };
+
+    // Conditional Meta Pixel Bootstrapper
+    if (window.ITQAN_TRACKING_CONFIG && window.ITQAN_TRACKING_CONFIG.metaPixelId) {
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', window.ITQAN_TRACKING_CONFIG.metaPixelId);
+      fbq('track', 'PageView');
+    }
+  </script>
+
   <!-- JSON-LD FAQPage Schema for Search Engine Rich Snippets -->
   <script type="application/ld+json">
   {
@@ -192,6 +223,11 @@
   </header>
 
   <!-- =========================================================================
+       MAIN CONTENT LANDMARK
+       ========================================================================= -->
+  <main id="main-content">
+
+  <!-- =========================================================================
        2. HERO SECTION (Blueprint Architectural Grid & Technical Rigor)
        ========================================================================= -->
   <section class="relative pt-8 pb-16 lg:pt-16 lg:pb-24 overflow-hidden blueprint-grid">
@@ -288,7 +324,7 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-sm font-bold text-primary">محضر الفحص والاستلام الهندسي</h3>
+                  <div role="heading" aria-level="2" class="text-sm font-bold text-primary">محضر الفحص والاستلام الهندسي</div>
                   <p class="text-xs text-slate-500 font-mono">CODE: EGY-QC-0428</p>
                 </div>
               </div>
@@ -300,9 +336,9 @@
             <!-- Subtle Laser Level Line Visual Indicator -->
             <div class="relative py-1">
               <div class="laser-level-line rounded-full"></div>
-              <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono mt-1 px-1">
+              <div class="flex justify-between items-center text-[10px] text-slate-600 font-mono mt-1 px-1">
                 <span>LASER LEVEL AXIS [X: 0.00°]</span>
-                <span class="text-rose-500 font-bold">ميزان ليزر نشط</span>
+                <span class="text-rose-700 font-bold">ميزان ليزر نشط</span>
               </div>
             </div>
 
@@ -318,7 +354,7 @@
                     <div class="text-[11px] text-slate-500">اختبار شبكات التغذية على 15 بار لضمان عدم وجود أي تسريب مجهري</div>
                   </div>
                 </div>
-                <span class="text-xs font-bold text-emerald-600 bg-white px-2 py-0.5 rounded shadow-xs font-mono">15 BAR</span>
+                <span class="text-xs font-bold text-emerald-800 bg-white px-2 py-0.5 rounded shadow-xs font-mono">15 BAR</span>
               </div>
 
               <!-- Item 2: كابلات السويدي -->
@@ -330,7 +366,7 @@
                     <div class="text-[11px] text-slate-500">فحص رقمي لكود المصنع وقياس دقيق لقطر النحاس النقي بالجهاز</div>
                   </div>
                 </div>
-                <span class="text-xs font-bold text-emerald-600 bg-white px-2 py-0.5 rounded shadow-xs">أصلي 100%</span>
+                <span class="text-xs font-bold text-emerald-800 bg-white px-2 py-0.5 rounded shadow-xs">أصلي 100%</span>
               </div>
 
               <!-- Item 3: استواء المحارة واللياسة بالليزر -->
@@ -461,7 +497,7 @@
         <div class="bg-surface-ground rounded-2xl p-7 border border-slate-200 hover:border-primary/30 transition-all duration-200 relative group flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <span class="text-3xl font-black text-slate-300 group-hover:text-accent transition-colors font-mono">01</span>
+              <span class="text-3xl font-black text-slate-400 group-hover:text-primary transition-colors font-mono">01</span>
               <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
                 <!-- Unit Form Icon -->
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -486,7 +522,7 @@
         <div class="bg-surface-ground rounded-2xl p-7 border border-slate-200 hover:border-primary/30 transition-all duration-200 relative group flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <span class="text-3xl font-black text-slate-300 group-hover:text-accent transition-colors font-mono">02</span>
+              <span class="text-3xl font-black text-slate-400 group-hover:text-primary transition-colors font-mono">02</span>
               <div class="w-12 h-12 rounded-xl bg-accent/20 text-accent-dark flex items-center justify-center font-bold">
                 <!-- Engineer Inspection Icon -->
                 <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -511,7 +547,7 @@
         <div class="bg-surface-ground rounded-2xl p-7 border border-slate-200 hover:border-primary/30 transition-all duration-200 relative group flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <span class="text-3xl font-black text-slate-300 group-hover:text-accent transition-colors font-mono">03</span>
+              <span class="text-3xl font-black text-slate-400 group-hover:text-primary transition-colors font-mono">03</span>
               <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
                 <!-- Key & Guarantee Icon -->
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1290,39 +1326,85 @@
             <p id="unit-area-error" class="hidden text-xs font-semibold text-rose-500 mt-1.5"></p>
           </div>
 
-          <!-- Current Unit State (Dropdown / Pill Selector) -->
+          <!-- Current Unit State (Pill Selector) -->
           <div>
-            <label class="block text-sm font-bold text-primary mb-2">
+            <span id="unit-state-label" class="block text-sm font-bold text-primary mb-2">
               حالة الوحدة الحالية <span class="text-rose-500">*</span>
-            </label>
-            <input type="hidden" id="unit-state-input" name="unitState" value="" aria-label="حالة الوحدة الحالية">
+            </span>
+            <input type="hidden" id="unit-state-input" name="unitState" value="">
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="حالة الوحدة الحالية">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-labelledby="unit-state-label">
               
               <!-- Option 1: على الطوب الأحمر -->
-              <div class="state-option flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-primary transition-all cursor-pointer" data-value="على الطوب الأحمر">
-                <div class="flex items-center gap-3">
+              <div class="state-option flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-primary transition-all cursor-pointer" data-value="على الطوب الأحمر">
+                <div class="flex items-center gap-2.5">
                   <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center state-dot">
                     <span class="w-2 h-2 rounded-full bg-transparent"></span>
                   </div>
-                  <span class="text-sm font-bold text-slate-800">على الطوب الأحمر</span>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">على الطوب الأحمر</span>
                 </div>
-                <span class="text-xs text-slate-500 font-mono">تأسيس كامل</span>
+                <span class="text-[11px] text-slate-500 font-mono">تأسيس</span>
               </div>
 
               <!-- Option 2: نصف تشطيب -->
-              <div class="state-option flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-primary transition-all cursor-pointer" data-value="نصف تشطيب">
-                <div class="flex items-center gap-3">
+              <div class="state-option flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-primary transition-all cursor-pointer" data-value="نصف تشطيب">
+                <div class="flex items-center gap-2.5">
                   <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center state-dot">
                     <span class="w-2 h-2 rounded-full bg-transparent"></span>
                   </div>
-                  <span class="text-sm font-bold text-slate-800">نصف تشطيب</span>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">نصف تشطيب</span>
                 </div>
-                <span class="text-xs text-slate-500 font-mono">محارة وحلوق</span>
+                <span class="text-[11px] text-slate-500 font-mono">محارة</span>
+              </div>
+
+              <!-- Option 3: تجديد شامل لوحدة قائمة -->
+              <div class="state-option flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-primary transition-all cursor-pointer" data-value="تجديد شامل لوحدة قائمة">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center state-dot">
+                    <span class="w-2 h-2 rounded-full bg-transparent"></span>
+                  </div>
+                  <span class="text-xs sm:text-sm font-bold text-slate-800">تجديد شامل</span>
+                </div>
+                <span class="text-[11px] text-slate-500 font-mono">إعادة تشطيب</span>
               </div>
 
             </div>
             <p id="state-error" class="hidden text-xs font-semibold text-rose-500 mt-1.5"></p>
+          </div>
+
+          <!-- Property Type Selector -->
+          <div>
+            <span id="property-type-label" class="block text-sm font-bold text-primary mb-2">
+              نوع العقار <span class="text-rose-500">*</span>
+            </span>
+            <input type="hidden" id="property-type-input" name="propertyType" value="شقة سكنية">
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" role="radiogroup" aria-labelledby="property-type-label">
+              <button type="button" class="prop-type-pill active py-2.5 px-3 rounded-xl border border-primary bg-primary text-white text-xs sm:text-sm font-bold transition-all text-center" data-type="شقة سكنية">شقة سكنية</button>
+              <button type="button" class="prop-type-pill py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:border-primary text-slate-700 text-xs sm:text-sm font-bold transition-all text-center" data-type="دوبلكس / بنتهاوس">دوبلكس / بنتهاوس</button>
+              <button type="button" class="prop-type-pill py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:border-primary text-slate-700 text-xs sm:text-sm font-bold transition-all text-center" data-type="فيلا / تاون هاوس">فيلا / تاون هاوس</button>
+              <button type="button" class="prop-type-pill py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:border-primary text-slate-700 text-xs sm:text-sm font-bold transition-all text-center" data-type="مقر إداري / تجاري">مقر إداري / تجاري</button>
+            </div>
+          </div>
+
+          <!-- Execution Timeline Selector -->
+          <div>
+            <span id="timeline-label" class="block text-sm font-bold text-primary mb-2">
+              الموعد المتوقع لبدء التشطيب <span class="text-rose-500">*</span>
+            </span>
+            <input type="hidden" id="timeline-input" name="timeline" value="فوري (خلال أسبوعين)">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="radiogroup" aria-labelledby="timeline-label">
+              <button type="button" class="timeline-pill active py-2 px-3 rounded-xl border border-primary bg-primary text-white text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5" data-timeline="فوري (خلال أسبوعين)">
+                <span>⚡</span> <span>فوري (خلال أسبوعين)</span>
+              </button>
+              <button type="button" class="timeline-pill py-2 px-3 rounded-xl border border-slate-200 bg-white hover:border-primary text-slate-700 text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5" data-timeline="خلال 1 - 3 أشهر">
+                <span>📅</span> <span>خلال 1 - 3 أشهر</span>
+              </button>
+              <button type="button" class="timeline-pill py-2 px-3 rounded-xl border border-slate-200 bg-white hover:border-primary text-slate-700 text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5" data-timeline="استلام قادم (أكثر من 3 أشهر)">
+                <span>🏗️</span> <span>استلام قادم</span>
+              </button>
+            </div>
           </div>
 
           <!-- Location / Compound Field -->
@@ -1383,6 +1465,7 @@
 
     </div>
   </section>
+  </main>
 
   <!-- =========================================================================
        6. SUCCESS MODAL
@@ -1424,9 +1507,147 @@
 
         <!-- Secondary Action: Close / Finish Button -->
         <button 
+          type="button"
           id="close-modal-btn"
           class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-xl text-sm transition-colors duration-200">
           إغلاق ومتابعة التصفح
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PRIVACY POLICY MODAL (Meta & Google Ad Compliance)
+       ========================================================================= -->
+  <div id="privacy-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-primary/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-soft-float">
+      
+      <!-- Modal Header -->
+      <div class="p-6 sm:p-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+            <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="privacy-modal-title" class="text-xl font-black text-primary">سياسة الخصوصية وسرية البيانات</h3>
+            <p class="text-xs text-slate-500 font-medium">حماية بياناتك وحقك في عدم التعرض للإزعاج التزام أساسي في إتقان</p>
+          </div>
+        </div>
+        <button type="button" class="close-info-modal p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors" data-modal-close="privacy-modal" aria-label="إغلاق">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm text-slate-700 leading-relaxed font-medium">
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-950 text-xs sm:text-sm">
+          <strong>🔒 تعهد إتقان الصارم:</strong> لن نشارك رقم هاتفك أو بيانات وحدتك مع أي شركات تشطيب أو مقاولين عشوائيين إطلاقاً. مهندس إتقان الاستشاري هو نقطة الاتصال الفنية الوحيدة لمراجعة متطلباتك لحمايتك من أي إزعاج أو مكالمات ترويجية غير مرغوب فيها.
+        </div>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">1. البيانات التي نجمعها</h4>
+          <p>عند تسجيل طلب استشارة أو معاينة عبر المنصة، نجمع البيانات الضرورية لدراسة وحدتك الفنية وتشمل: الاسم، رقم الهاتف المحمول، مساحة الوحدة بالمتر المربع، نوع العقار، حالتها التنفيذية، والجدول الزمني، والموقع أو اسم الكومبوند.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">2. الغرض من معالجة البيانات</h4>
+          <p>تُستخدم بياناتك حصرياً للأغراض التالية:</p>
+          <ul class="list-disc list-inside space-y-1 text-slate-600 mr-2">
+            <li>دراسة المواصفات الهندسية ومقارنة أفضل 3 عروض تشطيب معتمدة تتناسب مع ميزانيتك.</li>
+            <li>تنسيق موعد المعاينة الميدانية وإرسال نتائج الفحص وتقارير الجودة عبر واتساب أو الهاتف.</li>
+            <li>إصدار وتوثيق محاضر الاستلام وشهادات الضمان المعتمدة لمدة عامين.</li>
+          </ul>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">3. أمان وتخزين البيانات</h4>
+          <p>تُحفظ كافة البيانات عبر سحابة Google Cloud Firestore المعتمدة عالمياً وفق بروتوكولات تشفير آمنة (TLS / AES-256)، ولا يملك حق الوصول إليها سوى المستشار الهندسي المعتمد المكلف بمتابعة ملف وحدتك.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">4. ملفات تعريف الارتباط وتتبع الحملات (Cookies & Analytics)</h4>
+          <p>قد نستخدم ملفات تعريف الارتباط المجهولة ومعلمات الروابط (مثل Google Analytics و Meta Pixel) لأغراض قياس فعالية الحملات الإعلانية وتحسين تجربة التصفح، دون تخزين أي معلومات ائتمانية أو مالية حساسة.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">5. حقك الكامل في تعديل وحذف البيانات</h4>
+          <p>يحق لك في أي وقت مراجعة بياناتك المسجلة أو طلب حذفها نهائياً من سجلاتنا فورياً وبدون أي تعقيد عبر التواصل المباشر مع فريق الدعم على واتساب: <a href="https://wa.me/201554941678" target="_blank" class="text-emerald-600 font-bold hover:underline" dir="ltr">+20 155 494 1678</a>.</p>
+        </section>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <button type="button" class="close-info-modal bg-primary hover:bg-primary-light text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-colors" data-modal-close="privacy-modal">
+          فهمت ذلك وموافق
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       TERMS & CONDITIONS MODAL
+       ========================================================================= -->
+  <div id="terms-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-primary/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="terms-modal-title">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-soft-float">
+      
+      <!-- Modal Header -->
+      <div class="p-6 sm:p-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-accent/20 text-accent-dark flex items-center justify-center font-bold">
+            <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 id="terms-modal-title" class="text-xl font-black text-primary">الشروط والأحكام العامة لمنظومة إتقان</h3>
+            <p class="text-xs text-slate-500 font-medium">إطار العمل الهندسي والتعاقدي المنظم للعلاقة بين المالك والمكتب والمنصة</p>
+          </div>
+        </div>
+        <button type="button" class="close-info-modal p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors" data-modal-close="terms-modal" aria-label="إغلاق">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm text-slate-700 leading-relaxed font-medium">
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">1. استقلالية الرقابة الهندسية (طرف ثالث محايد)</h4>
+          <p>منصة «إتقان» هي جهة إشراف وتدقيق هندسي استشاري مستقل 100% (Third-Party Auditing)، ولا تعمل كشركة مقاولات تنفيذية ولا تتبع أي مكتب تشطيب. دور المهندس هو حماية حقوق مالك الوحدة وضمان الالتزام بالكود المصري للبناء والمواصفات المعتمدة.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">2. مجانية دراسة العروض والمقارنة</h4>
+          <p>تسجيل بيانات الوحدة وتلقي ومقارنة أفضل 3 عروض تشطيب مجاني تماماً 100% وبدون أي إلزام بالتعاقد. للمالك الحق الكامل في طلب عروض بديلة أو عدم التعاقد دون أي مطالبات مالية.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">3. استحقاق رسوم الرقابة الهندسية (1%)</h4>
+          <p>تُستحق نسبة الـ 1% كرسوم رقابة استشارية فقط عند استقرار المالك على أحد المكاتب وتوقيع العقد الرسمي وبدء التنفيذ الفعلي في الموقع. وتغطي هذه النسبة زيارات الفحص الميداني للمحطات الـ 6 بأجهزة القياس المعتمدة، التوثيق العيني قبل الدفن، إصدار محاضر الاستلام الرسمية، وتفعيل شهادة الضمان.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">4. التدفقات المالية للتشطيب</h4>
+          <p>الاتفاق المالي وسداد دفعات التشطيب يتم بشكل مباشر وثنائي بين المالك والمكتب المنفذ وفق جدول الدفعات المرحلية المتفق عليه في العقد. منصة إتقان لا تحصل ولا تحتفظ بأموال أعمال التشطيب.</p>
+        </section>
+
+        <section class="space-y-2">
+          <h4 class="font-bold text-primary text-base">5. شهادة الضمان المعتمدة (سنتان)</h4>
+          <p>يحصل المالك عند استلام وحدته بنجاح على شهادة ضمان معتمدة لمدة عامين تغطي كافة الأعمال التأسيسية والتشطيبية ضد عيوب الصناعة أو التنفيذ، مع عقد رسمي ملزم قانونياً، بالإضافة إلى إتاحة خيارات الضمان الممتد (5 و 10 سنوات) للفلل والمشاريع الخاصة.</p>
+        </section>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <button type="button" class="close-info-modal bg-primary hover:bg-primary-light text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-colors" data-modal-close="terms-modal">
+          إغلاق
         </button>
       </div>
 
@@ -1464,9 +1685,9 @@
         <nav class="flex items-center gap-6 text-sm font-medium">
           <a href="#faq" class="hover:text-accent transition-colors">الأسئلة الشائعة</a>
           <span class="text-slate-700">•</span>
-          <a href="#" class="hover:text-accent transition-colors">سياسة الخصوصية</a>
+          <button type="button" data-modal-open="privacy-modal" class="hover:text-accent transition-colors text-slate-300 font-medium bg-transparent border-0 p-0 cursor-pointer">سياسة الخصوصية</button>
           <span class="text-slate-700">•</span>
-          <a href="#" class="hover:text-accent transition-colors">الشروط والأحكام</a>
+          <button type="button" data-modal-open="terms-modal" class="hover:text-accent transition-colors text-slate-300 font-medium bg-transparent border-0 p-0 cursor-pointer">الشروط والأحكام</button>
           <span class="text-slate-700">•</span>
           <a href="https://wa.me/201554941678" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">تواصل معنا</a>
         </nav>
@@ -1486,6 +1707,7 @@
        8. FLOATING WHATSAPP BUTTON (High Mobile Conversion)
        ========================================================================= -->
   <a 
+    id="floating-whatsapp-btn"
     href="https://wa.me/201554941678?text=أهلاً%20منصة%20إتقان،%20عايز%20استشارة%20هندسية%20وعروض%20تشطيب%20معتمدة%20لوحدتي" 
     target="_blank" 
     rel="noopener noreferrer"
@@ -1495,6 +1717,21 @@
       <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
     </svg>
   </a>
+
+  <!-- =========================================================================
+       9. MOBILE STICKY CONVERSION BAR (High Mobile Ad Conversion)
+       ========================================================================= -->
+  <div id="mobile-sticky-bar" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 shadow-2xl transition-transform duration-300 translate-y-full">
+    <button 
+      type="button"
+      data-scroll-to="lead-form"
+      class="w-full bg-accent hover:bg-accent-hover text-primary font-black text-sm sm:text-base py-3.5 px-4 rounded-xl shadow-md text-center flex items-center justify-center gap-2 active:scale-95 transition-transform">
+      <span>طلب عروض التشطيب المعتمدة لوحدتك</span>
+      <svg class="w-5 h-5 transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </button>
+  </div>
 
   <!-- Firebase App & Firestore & Analytics SDKs -->
   <script type="module">
