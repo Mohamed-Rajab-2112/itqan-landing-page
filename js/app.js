@@ -526,18 +526,29 @@ function isValidEgyptianPhone(phone) {
 
 /**
  * ============================================================================
- * WhatsApp Integration: Dual-Engine Architecture
- * Target Phone Number: +201554941678
+ * Lead Notification & Communication Configuration
+ * - Customer WhatsApp: Target phone for direct client conversations (wa.me)
+ * - Telegram Bot: Instant admin & sales team lead dispatch via Bot API
  * ============================================================================
  */
+const ITQAN_ALERT_CONFIG = {
+  // Business WhatsApp phone number for direct customer chat links (wa.me)
+  whatsappPhone: '201554941678',
+
+  // Official Telegram Bot API configuration for instant admin/team alerts
+  telegramBotToken: '8770628176:AAF1s0Cj9agAIObxwVY-6AlZB_kjA7C2HO0',
+  telegramChatId: '1290779007',
+  enableTelegramAlert: true
+};
+
+// Backward-compatible alias for existing references
 const ITQAN_WHATSAPP_CONFIG = {
-  phone: '201554941678', // International format without '+'
-  callMeBotApiKey: '9610059', // Activated CallMeBot API key
-  enableBackgroundAlert: true // Enabled for silent admin alerts
+  phone: ITQAN_ALERT_CONFIG.whatsappPhone
 };
 
 /**
  * Format lead payload into a branded, high-converting Arabic WhatsApp message
+ * (Used for the customer's direct confirmation CTA button in the success modal)
  */
 function formatWhatsAppLeadMessage(leadData, leadId) {
   const formattedDate = new Date().toLocaleString('ar-EG', {
@@ -564,7 +575,7 @@ function formatWhatsAppLeadMessage(leadData, leadId) {
   }
 
   lines.push(`────────────────────────────`);
-  lines.push(`تم تسجيل البيانات بنجاح في قاعدة بيانات إتقان. يرجى التواصل لمراجعة المواصفات وتجهيز مقارنة أفضل 3 عروض تشطيب معتمدة وتحديد موعد المعاينة.`);
+  lines.push(`تم تسجيل البيانات بنجاح في قاعدة بيانات إتقان. يرجى التواصل لمراجعة المواصفات وتجهيز مقارنة عروض التشطيب المعتمدة وتحديد موعد المعاينة.`);
 
   return lines.join('\n');
 }
@@ -577,66 +588,85 @@ function buildWhatsAppUrl(phoneNumber, message) {
 }
 
 /**
- * Engine 2: Send silent background alert via CallMeBot API
+ * Escape HTML characters for Telegram HTML mode
  */
-function sendBackgroundWhatsAppAlert(leadData, leadId) {
-  if (!ITQAN_WHATSAPP_CONFIG.callMeBotApiKey || !ITQAN_WHATSAPP_CONFIG.enableBackgroundAlert) {
+function escapeTelegramHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Format lead payload into a branded HTML card for Telegram admin notification
+ */
+function formatTelegramLeadMessage(leadData, leadId) {
+  const formattedDate = new Date().toLocaleString('ar-EG', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  });
+
+  // Normalize phone for direct wa.me link (+20)
+  const rawDigits = (leadData.phone || '').replace(/[^0-9]/g, '');
+  const cleanPhone = rawDigits.startsWith('20') ? rawDigits : (rawDigits.startsWith('0') ? '2' + rawDigits : '20' + rawDigits);
+
+  let message = `🚨 <b>طلب معاينة وعروض تشطيب جديد | إتقان</b>\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `👤 <b>اسم العميل:</b> ${escapeTelegramHtml(leadData.fullName)}\n` +
+    `📞 <b>رقم الموبايل:</b> <a href="tel:${leadData.phone}">${leadData.phone}</a> (<a href="https://wa.me/${cleanPhone}">فتح محادثة واتساب</a>)\n` +
+    `🏛️ <b>نوع العقار:</b> ${escapeTelegramHtml(leadData.propertyType || 'شقة سكنية')}\n` +
+    `📐 <b>المساحة:</b> ${leadData.unitArea} م²\n` +
+    `🧱 <b>حالة الوحدة:</b> ${escapeTelegramHtml(leadData.unitState || 'غير محدد')}\n` +
+    `⏱️ <b>الموعد المتوقع:</b> ${escapeTelegramHtml(leadData.timeline || 'فوري')}\n` +
+    `📍 <b>الموقع / الكومبوند:</b> ${escapeTelegramHtml(leadData.location)}\n` +
+    `🔖 <b>كود الطلب:</b> <code>${leadId}</code>\n` +
+    `🕒 <b>وقت التقديم:</b> ${formattedDate}\n`;
+
+  if (leadData.utm_source) {
+    message += `━━━━━━━━━━━━━━━━━━━━\n` +
+      `🏷️ <b>مصدر الحملة (UTM):</b> ${escapeTelegramHtml(leadData.utm_source)}`;
+    if (leadData.utm_campaign) {
+      message += ` | ${escapeTelegramHtml(leadData.utm_campaign)}`;
+    }
+    message += `\n`;
+  }
+
+  return message;
+}
+
+/**
+ * Dispatch instant lead alert to admin/sales team via official Telegram Bot API
+ */
+async function sendTelegramAdminAlert(leadData, leadId) {
+  if (!ITQAN_ALERT_CONFIG.telegramBotToken || !ITQAN_ALERT_CONFIG.enableTelegramAlert) {
     return;
   }
+
   try {
-    const text = formatWhatsAppLeadMessage(leadData, leadId);
+    const text = formatTelegramLeadMessage(leadData, leadId);
 
-    // Reuse or create hidden iframe
-    let iframe = document.getElementById('itqan-callmebot-frame');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id = 'itqan-callmebot-frame';
-      iframe.name = 'itqan-callmebot-frame';
-      iframe.style.display = 'none';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = 'none';
-      document.body.appendChild(iframe);
+    const response = await fetch(`https://api.telegram.org/bot${ITQAN_ALERT_CONFIG.telegramBotToken}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: ITQAN_ALERT_CONFIG.telegramChatId,
+        text: text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+      })
+    });
+
+    const result = await response.json();
+    if (result.ok) {
+      console.log('✅ [Telegram Service] Instant lead alert successfully delivered to admin/team');
+    } else {
+      console.warn('⚠️ [Telegram Service] Telegram API notice:', result);
     }
-
-    const form = document.createElement('form');
-    form.action = 'https://api.callmebot.com/whatsapp.php';
-    form.method = 'GET';
-    form.target = 'itqan-callmebot-frame';
-    form.style.display = 'none';
-
-    const phoneInput = document.createElement('input');
-    phoneInput.type = 'hidden';
-    phoneInput.name = 'phone';
-    phoneInput.value = ITQAN_WHATSAPP_CONFIG.phone;
-    form.appendChild(phoneInput);
-
-    const textInput = document.createElement('input');
-    textInput.type = 'hidden';
-    textInput.name = 'text';
-    textInput.value = text;
-    form.appendChild(textInput);
-
-    const keyInput = document.createElement('input');
-    keyInput.type = 'hidden';
-    keyInput.name = 'apikey';
-    keyInput.value = ITQAN_WHATSAPP_CONFIG.callMeBotApiKey;
-    form.appendChild(keyInput);
-
-    document.body.appendChild(form);
-
-    setTimeout(() => {
-      try {
-        form.submit();
-      } catch (submitErr) {
-        console.warn('Form submit fallback notice:', submitErr);
-      }
-      setTimeout(() => form.remove(), 1000);
-    }, 50);
-
-    console.log('✅ [WhatsApp Service] Background alert submitted via iframe bridge to CallMeBot');
   } catch (err) {
-    console.warn('⚠️ [WhatsApp Service] Background alert notice:', err);
+    console.warn('⚠️ [Telegram Service] Network notice:', err);
   }
 }
 
@@ -754,8 +784,8 @@ function initLeadForm() {
         // 3. Trigger Conversion Events (GA4 + Meta Pixel)
         trackLeadConversion(leadId, leadPayload);
 
-        // 4. Trigger background alert (CallMeBot bridge)
-        sendBackgroundWhatsAppAlert(leadPayload, leadId);
+        // 4. Trigger background alert (Telegram Bot API)
+        sendTelegramAdminAlert(leadPayload, leadId);
 
         // 5. Show success modal
         if (successModal) {

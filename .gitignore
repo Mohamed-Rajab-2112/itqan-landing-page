@@ -24,4 +24,5 @@ yarn-error.log*
 # Python cache
 __pycache__/
 *.py[cod]
-*$py.class
+# Firebase cache
+.firebase/
