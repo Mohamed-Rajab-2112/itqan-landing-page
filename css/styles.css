@@ -13,6 +13,23 @@
   --color-bg-clean: #F8F9FA;
   --color-card-border: rgba(226, 232, 240, 0.8);
   --color-blueprint: #0F2744;
+  --color-teal-trust: #0D9488;
+  --color-teal-trust-dark: #0F766E;
+  --color-text-primary: #1E293B;
+  --color-text-muted: #64748B;
+}
+
+.brand-wordmark {
+  color: var(--color-primary);
+}
+
+.brand-tagline {
+  color: var(--color-text-muted);
+}
+
+nav a,
+header button {
+  color: var(--color-primary);
 }
 
 html {
@@ -23,9 +40,66 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hero Headline Arabic Line Height & Vertical Rhythm */
-.hero-headline {
-  line-height: 1.4 !important;
+/* Typography Scale (DESIGN.md hierarchy) */
+h1, .hero-headline {
+  font-size: clamp(2.125rem, 3.8vw, 2.875rem) !important; /* 34px - 46px */
+  font-weight: 800 !important;
+  line-height: 1.38 !important;
+}
+
+/* Hero Headline Text Highlight Underline */
+.hero-highlight-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.hero-highlight-accent::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 0;
+  width: 100%;
+  height: 12px;
+  background-color: rgba(245, 166, 35, 0.35);
+  border-radius: 4px;
+  z-index: -1;
+}
+
+@media (max-width: 640px) {
+  .hero-highlight-accent {
+    display: inline;
+    background-image: linear-gradient(180deg, transparent 72%, rgba(245, 166, 35, 0.38) 72%, rgba(245, 166, 35, 0.38) 95%, transparent 95%);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding: 0 2px;
+  }
+  .hero-highlight-accent::after {
+    display: none;
+  }
+}
+
+
+h2 {
+  font-size: clamp(2rem, 3.5vw, 2.5rem); /* 32px - 40px (1.28x over h3) */
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+h3 {
+  font-size: 1.625rem; /* 26px (1.30x over h4) */
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+h4 {
+  font-size: 1.25rem; /* 20px (1.25x over body) */
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+p, body {
+  font-size: 1rem; /* 16px */
+  line-height: 1.7;
 }
 
 @media (min-width: 640px) {
@@ -110,13 +184,13 @@ html {
   animation: softFloat 5s ease-in-out infinite;
 }
 
-/* Pulse Glow for Primary CTA */
+/* Pulse Glow for Primary CTA (Subtle Elevation) */
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 4px 20px -2px rgba(245, 166, 35, 0.45);
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.15);
   }
   50% {
-    box-shadow: 0 8px 30px 2px rgba(245, 166, 35, 0.65);
+    box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.22);
   }
 }
 
@@ -126,13 +200,14 @@ html {
 
 /* Official Engineering Quality Stamp */
 .engineering-stamp {
-  border: 2px dashed #0D9488;
+  border: 2px dashed #0F766E;
   color: #0F766E;
   background: rgba(240, 253, 250, 0.95);
+  padding: 0.5rem 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transform: rotate(-4deg);
-  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
 
@@ -156,7 +231,6 @@ html {
   background: linear-gradient(90deg, transparent 0%, #EF4444 30%, #EF4444 70%, transparent 100%);
   height: 2px;
   animation: laserSweep 3s infinite ease-in-out;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
 }
 
 /* Technical CAD Corner Marks */
@@ -223,5 +297,30 @@ select:focus-visible {
 /* Mobile Floating WhatsApp Offset when Sticky Bar is Active */
 #floating-whatsapp-btn.bottom-20 {
   bottom: 5.25rem !important;
+}
+
+/* Accessibility: Intentional reduced-motion alternatives */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-soft-float,
+  .cta-pulse,
+  .badge-shimmer {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .laser-level-line {
+    animation: none !important;
+    opacity: 0.85;
+  }
+
+  .engineering-stamp,
+  .state-option,
+  header {
+    transition: none !important;
+  }
 }
 

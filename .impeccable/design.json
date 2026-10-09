@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T01:42:00.000Z",
+  "title": "Design System: Itqan (إتقان)",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Engineering Navy",
+        "canonical": "#1A2B4C",
+        "tonalRamp": ["#0B1220", "#101B30", "#1A2B4C", "#253C66", "#3B588F", "#6B86BA", "#A8BAE0", "#E2E8F0"]
+      },
+      "accent": {
+        "role": "accent",
+        "displayName": "Safety Gold",
+        "canonical": "#F5A623",
+        "tonalRamp": ["#7A4B05", "#A86908", "#D9880F", "#F5A623", "#F8BC57", "#FBD38C", "#FDE9C1", "#FEF7ED"]
+      },
+      "teal-trust": {
+        "role": "tertiary",
+        "displayName": "Accreditation Teal",
+        "canonical": "#0D9488",
+        "tonalRamp": ["#042F2E", "#0B514C", "#0D9488", "#14B8A6", "#2DD4BF", "#5EEAD4", "#99F6E4", "#F0FDFA"]
+      },
+      "surface-ground": {
+        "role": "neutral",
+        "displayName": "Clean Ground Off-White",
+        "canonical": "#F8F9FA",
+        "tonalRamp": ["#0F172A", "#1E293B", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F8F9FA"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines with tight vertical cadence and high visual impact."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles and milestone value propositions."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Technical descriptions, FAQ responses, and report findings."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-subtle",
+        "value": "0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.08)",
+        "purpose": "Resting elevation for cards grounded with a 1px border."
+      },
+      {
+        "name": "card-elevated",
+        "value": "0 12px 36px -8px rgba(26, 43, 76, 0.09)",
+        "purpose": "Interactive hover state for actionable inspection cards."
+      },
+      {
+        "name": "focus-accent",
+        "value": "0 0 0 3px rgba(245, 166, 35, 0.45)",
+        "purpose": "Accessible high-contrast focus ring for inputs and interactive buttons."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for transitions and state shifts."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action CTA",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "High-visibility primary booking button with active hover feedback.",
+      "html": "<button class=\"ds-btn-primary\">احجز موعد الفحص الهندسي الآن</button>",
+      "css": ".ds-btn-primary { background: #F5A623; color: #101B30; padding: 16px 32px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #E09415; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #1A2B4C; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Authoritative engineering navy action button.",
+      "html": "<button class=\"ds-btn-secondary\">تحميل نموذج محضر الاستلام</button>",
+      "css": ".ds-btn-secondary { background: #1A2B4C; color: #FFFFFF; padding: 14px 28px; font-family: 'Cairo', sans-serif; font-weight: 600; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background: #253C66; }"
+    },
+    {
+      "name": "Accreditation QC Stamp",
+      "kind": "custom",
+      "refersTo": "badge-qc",
+      "description": "Physical site inspection seal motif verifying compliance with Egyptian Code.",
+      "html": "<div class=\"ds-qc-stamp\"><span>معتمد | ITQAN QC #2026</span></div>",
+      "css": ".ds-qc-stamp { display: inline-flex; align-items: center; border: 2px dashed #0D9488; color: #0F766E; background: rgba(240, 253, 250, 0.95); padding: 6px 14px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 6px; transform: rotate(-4deg); box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15); transition: transform 0.2s ease; cursor: default; } .ds-qc-stamp:hover { transform: rotate(0deg) scale(1.03); }"
+    },
+    {
+      "name": "Inspection Diagnostic Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Planar technical inspection card with 1px border and hover elevation.",
+      "html": "<div class=\"ds-card\"><h4 class=\"ds-card-title\">فحص ضغط السباكة بالكبس الهيدروليكي</h4><p class=\"ds-card-desc\">اختبار خطوط التغذية عند 15 بار لمدة 24 ساعة لاكتشاف أي تسريب مدفون قبل السيراميك.</p></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.9); border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; direction: rtl; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 12px 36px -8px rgba(26, 43, 76, 0.09); } .ds-card-title { font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 18px; color: #1A2B4C; margin: 0 0 8px 0; } .ds-card-desc { font-family: 'Cairo', sans-serif; font-weight: 500; font-size: 14px; color: #64748B; line-height: 1.6; margin: 0; }"
+    },
+    {
+      "name": "Validated Egyptian Tel Field",
+      "kind": "input",
+      "refersTo": "input-tel",
+      "description": "RTL phone number field with Egyptian mobile prefixes.",
+      "html": "<input type=\"tel\" dir=\"rtl\" class=\"ds-input-tel\" placeholder=\"رقم الموبايل (مثال: 01012345678)\" />",
+      "css": ".ds-input-tel { width: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #CBD5E1; border-radius: 10px; padding: 14px 16px; font-family: 'Cairo', sans-serif; font-size: 15px; color: #1E293B; direction: rtl; transition: border-color 0.2s ease, box-shadow 0.2s ease; } .ds-input-tel:focus { outline: none; border-color: #1A2B4C; box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.35); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calibrated Blueprint",
+    "overview": "The visual language of Itqan embodies the rigorous, objective authority of certified civil and electromechanical engineering inspection. Instead of generic contractor sales aesthetics or playful startup decor, every pixel evokes the precision of an architectural drawing office, a structural testing laboratory, and the crisp diagnostic clarity of calibrated measurement instruments.\n\nSurfaces are planar, pristine, and grounded in a clean off-white field accented by architectural blueprints, subtle 24px CAD grids, and hairline engineering borders. Trust is conveyed not through loud decorative effects or ungrounded neon glows, but through immaculate typographic rhythm, high-contrast readability under bright sunlight, and authentic quality-control motifs.",
+    "keyCharacteristics": [
+      "Scientific Rigor: CAD grid textures (24×24px at 4% opacity), technical hairline brackets, and instrument-inspired visual badges.",
+      "Precision Typography: Cairo font strictly calibrated for Arabic right-to-left line heights (1.4× min for titles, 1.7× for body) to avoid diacritic clipping.",
+      "Focused Contrast: Deep Naval Blue foundation (#1A2B4C) paired with high-visibility Safety Gold (#F5A623) reserved exclusively for key conversion paths.",
+      "Zero Decorative Slop: No dark zero-offset glowing shadows, no purple/pink gradients, and no frivolous floating shapes without diagnostic meaning."
+    ],
+    "rules": [
+      {
+        "name": "The 10% Accent Doctrine",
+        "body": "Safety Gold (#F5A623) must occupy no more than 10% of any viewport. It is a precision conversion tool; overusing it dilutes its urgency and cheapens the engineering authority.",
+        "section": "colors"
+      },
+      {
+        "name": "The Verified QC Rule",
+        "body": "Teal (#0D9488) is exclusively reserved for authentic engineering claims, test reports, and official certifications. Never use green/teal for non-verified decorative elements.",
+        "section": "colors"
+      },
+      {
+        "name": "The Arabic Diacritic Clearance Rule",
+        "body": "Arabic typography in Cairo requires a minimum line-height: 1.35 on headings and line-height: 1.65–1.7 on body text to prevent letter ascenders, descenders, and hamzas from clipping against adjacent lines.",
+        "section": "typography"
+      },
+      {
+        "name": "The Heading Continuity Rule",
+        "body": "Never skip heading levels (e.g. <h1> directly to <h3>). Maintain strict sequential structure (h1 → h2 → h3) for document accessibility and screen reader navigation.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces remain flat with crisp hairline borders at rest. Shadows appear only dynamically in response to user interaction (hover, active press, floating sticky bars).",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do maintain strict sequential heading hierarchy (h1 → h2 → h3) on all sections.",
+      "Do ensure all phone and booking inputs have inputmode=\"tel\" and dir=\"rtl\".",
+      "Do preserve minimum 48px touch targets for all mobile actions.",
+      "Do ground cards with 1px hairline borders (#E2E8F0) before considering drop shadows.",
+      "Do use authentic engineering terminology and calibrated instrument names (Bosch laser, 15-bar hydraulic pump, El Sewedy copper check)."
+    ],
+    "donts": [
+      "Don't nest cards inside cards; flatten container hierarchy using whitespace and dividers.",
+      "Don't use colored zero-offset glow shadows (box-shadow: 0 0 Xpx ...) or artificial neon halos.",
+      "Don't use decorative purple, magenta, or pastel rainbow gradients.",
+      "Don't reduce Arabic heading line-height below 1.35; doing so clips Cairo letter diacritics.",
+      "Don't let primary accent gold (#F5A623) bleed into non-actionable background cards or body text."
+    ]
+  }
+}

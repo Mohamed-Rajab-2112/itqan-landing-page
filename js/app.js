@@ -220,6 +220,7 @@ function initUnitStateSelector() {
       options.forEach(opt => {
         opt.classList.remove('selected', 'border-primary', 'bg-slate-50', 'ring-2', 'ring-primary');
         opt.classList.add('border-slate-200');
+        opt.setAttribute('aria-checked', 'false');
         const indicator = opt.querySelector('.state-dot');
         if (indicator) {
           indicator.classList.remove('bg-primary', 'border-primary');
@@ -229,6 +230,7 @@ function initUnitStateSelector() {
 
       option.classList.add('selected', 'border-primary', 'bg-slate-50', 'ring-2', 'ring-primary');
       option.classList.remove('border-slate-200');
+      option.setAttribute('aria-checked', 'true');
       const activeDot = option.querySelector('.state-dot');
       if (activeDot) {
         activeDot.classList.add('bg-primary', 'border-primary');
@@ -324,26 +326,79 @@ function initAreaQuickPills() {
 }
 
 /**
- * 7. Privacy Policy & Terms of Service Modals
+ * 7. Accessible Modal System with Focus Trapping & Restoration
  */
+let lastFocusedModalElement = null;
+
+function trapModalFocus(modal) {
+  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusableElements = Array.from(modal.querySelectorAll(focusableSelector))
+    .filter(el => !el.disabled && el.offsetParent !== null);
+  
+  if (focusableElements.length > 0) {
+    focusableElements[0].focus();
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key !== 'Tab') return;
+    const currentFocusables = Array.from(modal.querySelectorAll(focusableSelector))
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (currentFocusables.length === 0) return;
+    
+    const firstEl = currentFocusables[0];
+    const lastEl = currentFocusables[currentFocusables.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      }
+    } else {
+      if (document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    }
+  };
+
+  modal._focusTrapHandler = handleKeyDown;
+  modal.addEventListener('keydown', handleKeyDown);
+}
+
+function releaseModalFocus(modal) {
+  if (modal._focusTrapHandler) {
+    modal.removeEventListener('keydown', modal._focusTrapHandler);
+    modal._focusTrapHandler = null;
+  }
+  if (lastFocusedModalElement && typeof lastFocusedModalElement.focus === 'function') {
+    lastFocusedModalElement.focus();
+    lastFocusedModalElement = null;
+  }
+}
+
+function openModal(modalId) {
+  const modal = typeof modalId === 'string' ? document.getElementById(modalId) : modalId;
+  if (!modal) return;
+  lastFocusedModalElement = document.activeElement;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.classList.add('overflow-hidden');
+  trapModalFocus(modal);
+}
+
+function closeModal(modal) {
+  if (!modal) return;
+  const modalEl = typeof modal === 'string' ? document.getElementById(modal) : modal;
+  if (!modalEl) return;
+  modalEl.classList.add('hidden');
+  modalEl.classList.remove('flex');
+  document.body.classList.remove('overflow-hidden');
+  releaseModalFocus(modalEl);
+}
+
 function initInfoModals() {
   const openButtons = document.querySelectorAll('[data-modal-open]');
   const closeButtons = document.querySelectorAll('[data-modal-close]');
-
-  const openModal = (modalId) => {
-    const modal = document.getElementById(modalId);
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.classList.add('overflow-hidden');
-  };
-
-  const closeModal = (modal) => {
-    if (!modal) return;
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.body.classList.remove('overflow-hidden');
-  };
 
   openButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -362,7 +417,7 @@ function initInfoModals() {
   });
 
   // Close modals on backdrop click
-  ['privacy-modal', 'terms-modal'].forEach(id => {
+  ['privacy-modal', 'terms-modal', 'success-modal'].forEach(id => {
     const modal = document.getElementById(id);
     if (modal) {
       modal.addEventListener('click', (e) => {
@@ -704,9 +759,7 @@ function initLeadForm() {
 
         // 5. Show success modal
         if (successModal) {
-          successModal.classList.remove('hidden');
-          successModal.classList.add('flex');
-          document.body.classList.add('overflow-hidden');
+          openModal(successModal);
         }
 
         // Reset form & restore default pill selections
@@ -714,6 +767,7 @@ function initLeadForm() {
         document.querySelectorAll('.state-option').forEach(opt => {
           opt.classList.remove('selected', 'border-primary', 'bg-slate-50', 'ring-2', 'ring-primary');
           opt.classList.add('border-slate-200');
+          opt.setAttribute('aria-checked', 'false');
           const dot = opt.querySelector('.state-dot');
           if (dot) {
             dot.classList.remove('bg-primary', 'border-primary');
@@ -764,16 +818,12 @@ function initLeadForm() {
   // Close modal behavior
   if (closeModalBtn && successModal) {
     closeModalBtn.addEventListener('click', () => {
-      successModal.classList.add('hidden');
-      successModal.classList.remove('flex');
-      document.body.classList.remove('overflow-hidden');
+      closeModal(successModal);
     });
 
     successModal.addEventListener('click', (e) => {
       if (e.target === successModal) {
-        successModal.classList.add('hidden');
-        successModal.classList.remove('flex');
-        document.body.classList.remove('overflow-hidden');
+        closeModal(successModal);
       }
     });
   }
@@ -785,6 +835,7 @@ function showFieldError(inputId, message) {
 
   input.classList.add('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-200');
   input.classList.remove('border-slate-300', 'focus:border-primary');
+  input.setAttribute('aria-invalid', 'true');
 
   const errorEl = document.getElementById(`${inputId}-error`);
   if (errorEl) {
@@ -800,6 +851,7 @@ function clearFormErrors() {
     if (input) {
       input.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-200');
       input.classList.add('border-slate-300', 'focus:border-primary');
+      input.setAttribute('aria-invalid', 'false');
     }
     const err = document.getElementById(`${id}-error`);
     if (err) err.classList.add('hidden');

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "google-analytics": {
+      "command": "/Users/squadio/.local/bin/uvx",
+      "args": ["analytics-mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "",
+        "GOOGLE_PROJECT_ID": "itqan-a18ae"
+      }
+    }
+  }
+}
